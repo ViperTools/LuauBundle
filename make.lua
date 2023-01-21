@@ -19,7 +19,7 @@ function vmake.build()
 end
 
 function vmake.run()
-    run('./a.exe')
+    run(platform.is_windows and './lua-bundle.exe' or './lua-bundle')
 end
 
 function vmake.install()
