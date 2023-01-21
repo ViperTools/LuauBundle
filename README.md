@@ -12,7 +12,7 @@ Changes the file name of the main file. The default is main.lua
 Changes the output file path. The default is bundle.lua
 
 > -p \
-Enables performance mode. This currently only disables tabs.
+Enables performance mode. Currently this only disables tabs.
 
 > -w \
 Enabled watch functionality. Watches Lua files in the working directory recursively, excluding the output file.
