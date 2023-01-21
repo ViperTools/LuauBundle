@@ -15,4 +15,4 @@ Changes the output file path. The default is bundle.lua
 Enables performance mode. Currently this only disables tabs.
 
 > -w \
-Enabled watch functionality. Watches Lua files in the working directory recursively, excluding the output file.
+Enables watch functionality. Watches Lua files in the working directory recursively, excluding the output file.
