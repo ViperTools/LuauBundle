@@ -8,6 +8,7 @@ function vmake.build()
     standard('c++2a')
     include { 'include', 'dependencies' }
     input('main.cpp', 'src/*.cpp')
+    output(platform.is_windows and 'lua-bundle.exe' or 'lua-bundle')
 
     -- Luau Parser
     include('dependencies/luau/Common/include')
