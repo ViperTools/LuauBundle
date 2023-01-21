@@ -2,7 +2,7 @@
 LuaBundle is a Lua(u) bundler that uses the require function to allow you to include other lua files and output one bundle file.
 
 ## Building
-LuaBundle uses [vmake](https://github.com/ViperTools/vmake) for building. Run `vmake -i` to build dependencies, then run `vmake -b` to build, or simply run `vmake -bi`. You only need to build dependencies once.
+LuaBundle uses [vmake](https://github.com/ViperTools/vmake) for building. Run `vmake -i` to build dependencies, then run `vmake -b` to build, or simply run `vmake -bi`. You only need to build dependencies once. Add the executable to your path if you want to use it anywhere.
 
 ## Flags
 > -f \<file> \
