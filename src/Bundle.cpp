@@ -74,7 +74,7 @@ namespace LuaBundle {
 
             size_t lineCount = Util::CountLines(registerSource);
 
-            // Store locations in top bundle
+            // Store locations in root bundle
 
             if (!parent) {
                 lines[path] = { line, line + lineCount - 2 };
@@ -88,8 +88,6 @@ namespace LuaBundle {
 
                 root->lines[path] = { line, line + lineCount - 2 };
             }
-
-            //std::cout << path << " is on lines (" << line << ", " << line + lineCount - 2 << ")" << std::endl;
 
             line += lineCount;
 
