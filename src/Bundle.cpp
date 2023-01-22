@@ -3,56 +3,109 @@
 #include <Bundle.hpp>
 #include <fstream>
 #include <iostream>
-namespace fs = std::filesystem;
 
 namespace LuaBundle {
-    Bundle Bundle::BundleFile(const std::filesystem::path& path, const BundleOptions& options) {
+    Bundle::Bundle(const std::filesystem::path& path, const BundleOptions& options, const Bundle* parent)
+        : path(path),
+        source(Util::ReadFile(path.string())),
+        options(options),
+        parent(parent)
+    {
         if (!path.has_filename()) {
             throw std::invalid_argument("Path does not have a file name");
         }
-        else if (!fs::exists(path)) {
+        else if (!std::filesystem::exists(path)) {
             throw std::invalid_argument("Path does not exist");
         }
 
-        Bundle bundle(path, options);
-
         Luau::Allocator allocator;
         Luau::AstNameTable names(allocator);
-        Luau::ParseResult parseResult = Luau::Parser::parse(bundle.source.c_str(), bundle.source.length(), names, allocator);
+        Luau::ParseResult parseResult = Luau::Parser::parse(source.c_str(), source.length(), names, allocator);
 
         if (!parseResult.errors.empty()) {
             for (Luau::ParseError error : parseResult.errors) {
                 std::cerr << error.getMessage() << std::endl;
             }
 
-            return bundle;
+            return;
         }
 
-        RequireVisitor visitor(bundle);
+        RequireVisitor visitor(this);
         parseResult.root->visit(&visitor);
-        bundle.Build();
-
-        return bundle;
+        BuildSource();
     }
 
-    void Bundle::ReplaceRequire(unsigned int line, unsigned int column) {
-        size_t lineIndex = -1;
-
-        for (unsigned int i = 0; i < line; i++) {
-            lineIndex = source.find('\n', lineIndex + 1);
+    bool Bundle::ContainsPath(const std::string& relativePath) const {
+        if (modules.contains(relativePath)) {
+            return true;
+        }
+        else if (parent) {
+            return parent->ContainsPath(relativePath);
         }
 
-        source.replace(lineIndex + 1 + column + (lineOffsets[line] * 13), 7, "LuaBundle.LoadModule"); // (lineOffsets[line] * 13) is because "LuaBundle.LoadModule".Length - "require".Length is 13
-        lineOffsets[line]++;
+        return false;
     }
 
-    void Bundle::Build() {
-        std::set<Module>::reverse_iterator module;
+    void Bundle::Require(Luau::AstExprGlobal* global, Luau::AstExprConstantString* argument, const std::filesystem::path& path) {
+        // Replace require with LuaBundle.LoadModule
+        size_t line = global->location.begin.line;
+        Util::ReplaceOnLine(source, line, global->location.begin.column + lineOffsets[line], 7, "LuaBundle.LoadModule");
+        lineOffsets[line] += 13;
 
-        for (module = modules.rbegin(); module != modules.rend(); module++) {
-            std::string src = BundleFile(module->path).source;
+        // Replace argument with proper name
+        std::string name = path.string();
+        line = argument->location.begin.line;
+        Util::ReplaceOnLine(source, line, argument->location.begin.column + lineOffsets[line], argument->value.size + 2, '"' + name + '"');
+        lineOffsets[line] += name.size() - argument->value.size;
 
-            source = "LuaBundle.RegisterModule(\"" + module->name + "\", function()\n" + (options.Tab ? Util::Tab(src) : src) + "\nend)\n\n" + source;
+        modules.insert(name);
+    }
+
+    void Bundle::BuildSource() {
+        std::string header;
+
+        for (const std::string& path : modules) {
+            if (parent && parent->ContainsPath(path)) {
+                continue;
+            }
+
+            std::string bundleSource = Bundle(path, { .line = line + 1 }, this).source;
+            std::string registerSource = "LuaBundle.RegisterModule(\"" + path + "\", function()\n" + (options.Tab ? Util::Tab(bundleSource) : bundleSource) + "\nend)\n\n";
+
+            size_t lineCount = Util::CountLines(registerSource);
+
+            // Store locations in top bundle
+
+            if (!parent) {
+                lines[path] = { line, line + lineCount - 2 };
+            }
+            else {
+                const Bundle* root = parent;
+
+                while (root->parent) {
+                    root = root->parent;
+                }
+
+                root->lines[path] = { line, line + lineCount - 2 };
+            }
+
+            //std::cout << path << " is on lines (" << line << ", " << line + lineCount - 2 << ")" << std::endl;
+
+            line += lineCount;
+
+            header = header + registerSource;
         }
+
+        source = header + source;
+    }
+    
+    std::string Bundle::BuildLineMap() {
+        std::string map = "{";
+
+        for (const auto& [path, location] : lines) {
+            map += "[\"" + path + "\"]={" + std::to_string(location.startLine) + "," + std::to_string(location.endLine) + "},";
+        }
+
+        return map.replace(map.size() - 1, map.size() - 1, 1, '}');
     }
 }

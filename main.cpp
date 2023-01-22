@@ -7,7 +7,13 @@ std::string inputFile = "main.lua", outputFile = "bundle.lua";
 
 void Bundle(const std::filesystem::path& path, const LuaBundle::BundleOptions& options) {
     std::ofstream file(outputFile, std::ios::trunc);
-    file << LuaBundle::moduleSource << LuaBundle::Bundle::BundleFile(path, options).source;
+
+    LuaBundle::Bundle bundle(path, options);
+    std::string source = LuaBundle::moduleSource + bundle.source;
+    LuaBundle::Util::Replace(source, "lineMap = {}", "lineMap = " + bundle.BuildLineMap());
+
+    file << source;
+
     file.close();
 }
 

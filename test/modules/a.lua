@@ -1,2 +1,2 @@
-local b = require('b.lua')
-return 'a', b
+require('more-modules/c.lua')
+return 'a'

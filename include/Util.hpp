@@ -27,4 +27,31 @@ namespace LuaBundle::Util {
 
         return str;
     }
+
+    static bool Replace(std::string& str, const std::string& from, const std::string& to) {
+        size_t start_pos = str.find(from);
+
+        if(start_pos == std::string::npos)
+            return false;
+
+        str.replace(start_pos, from.length(), to);
+
+        return true;
+    }
+
+    static std::string& ReplaceOnLine(std::string& string, size_t line, int column, int length, std::string replacement) {
+        size_t lineIndex = -1;
+
+        for (unsigned int i = 0; i < line; i++) {
+            lineIndex = string.find('\n', lineIndex + 1);
+        }
+
+        string.replace(lineIndex + 1 + column, length, replacement); 
+
+        return string;
+    }
+
+    static size_t CountLines(const std::string& str) {
+        return std::count(str.begin(), str.end(), '\n') + (!str.empty() && str.back() != '\n');
+    }
 }

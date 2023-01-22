@@ -1,5 +1,6 @@
 #pragma once
 #include <Bundle.hpp>
+#include <LuaModule.hpp>
 #include <Util.hpp>
 #include <filesystem>
 #include <string>
@@ -9,39 +10,31 @@
 #include <iostream>
 
 namespace LuaBundle {
-    struct Module {
-        Module(std::string name, std::string path)
-            : name(name),
-            path(path)
-        {}
-
-        std::string name;
-        std::filesystem::path path;
-
-        bool operator <(const Module &other) const {
-            return name < other.name;
-        }
-    };
-
     struct BundleOptions {
         bool Tab = true;
+        size_t line = moduleSourceLineCount + 1;
+    };
+
+    struct ModuleLocation {
+        size_t startLine, endLine;
     };
 
     struct Bundle {
-        Bundle(std::filesystem::path path, const BundleOptions& options = {})
-            : path(path),
-            source(Util::ReadFile(path.string())),
-            options(options)
-        {}
+        Bundle(const std::filesystem::path& path, const BundleOptions& options = {}, const Bundle* parent = 0);
 
-        static Bundle BundleFile(const std::filesystem::path& path, const BundleOptions& options = {});
-        void ReplaceRequire(unsigned int line, unsigned int column);
-        void Build();
+        bool ContainsPath(const std::string& relativePath) const;
+        void Require(Luau::AstExprGlobal* global, Luau::AstExprConstantString* argument, const std::filesystem::path& path);
+        void BuildSource();
+        std::string BuildLineMap();
+        void BuildRoot();
 
+        const Bundle* parent;
         const BundleOptions& options;
-        std::unordered_map<unsigned int, int> lineOffsets;
         std::filesystem::path path;
         std::string source;
-        std::set<Module> modules;
+        std::set<std::string> modules;
+        size_t line = options.line;
+        mutable std::unordered_map<std::string, ModuleLocation> lines;
+        std::unordered_map<unsigned int, int> lineOffsets;
     };
 }

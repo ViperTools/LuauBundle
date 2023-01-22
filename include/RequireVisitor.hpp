@@ -7,9 +7,9 @@
 namespace LuaBundle {
     struct RequireVisitor : Luau::AstVisitor
     {
-        LuaBundle::Bundle& bundle;
+        LuaBundle::Bundle* bundle;
 
-        RequireVisitor(LuaBundle::Bundle& bundle)
+        RequireVisitor(LuaBundle::Bundle* bundle)
             : bundle(bundle)
         {}
 
@@ -25,18 +25,17 @@ namespace LuaBundle {
                 return true;
             }
 
-            if (Luau::AstExprConstantString* constString = node->args.data[0]->as<Luau::AstExprConstantString>()) {
-                std::string str(constString->value.data);
+            if (Luau::AstExprConstantString* argument = node->args.data[0]->as<Luau::AstExprConstantString>()) {
+                std::string str(argument->value.data);
 
                 if (!str.ends_with(".lua") && !str.ends_with(".luau")) {
                     return true;
                 }
 
-                std::filesystem::path path = bundle.path.parent_path().append(str);
+                std::filesystem::path path = std::filesystem::relative(bundle->path.parent_path().append(str));
 
                 if (std::filesystem::exists(path)) {
-                    bundle.ReplaceRequire(global->location.begin.line, global->location.begin.column);
-                    bundle.modules.emplace(str, path);
+                    bundle->Require(global, argument, path);
                 }
             }
 
