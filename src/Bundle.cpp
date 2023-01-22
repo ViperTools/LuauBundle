@@ -104,6 +104,6 @@ namespace LuaBundle {
             map += "[\"" + path + "\"]={" + std::to_string(location.startLine) + "," + std::to_string(location.endLine) + "},";
         }
 
-        return map.replace(map.size() - 1, map.size() - 1, 1, '}');
+        return map.length() > 1 ? map.replace(map.size() - 1, map.size() - 1, 1, '}') : map + '}';
     }
 }

@@ -49,11 +49,13 @@ int main(int argc, char* argv[]) {
     Bundle(path, options);
 
     if (watch) {
+        std::filesystem::path outputPath = std::filesystem::path(outputFile);
+
         filewatch::FileWatch<std::string> watch(
             "./",
-            std::regex("^(?!" + outputFile + R"(\.lua$).*\.lua)"),
-            [&path, &options](const std::string _path, const filewatch::Event changeType) {
-                if (changeType == filewatch::Event::modified) {
+            std::regex(".*\\.lua"),
+            [&path, &options, &outputPath](const std::string _path, const filewatch::Event changeType) {
+                if (!std::filesystem::equivalent(_path, outputPath) && changeType == filewatch::Event::modified) {
                     Bundle(path, options);
                 }
             }
