@@ -17,6 +17,8 @@ function vmake.build()
 
     if platform.is_osx then
         flags('-framework CoreFoundation -framework CoreServices')
+    elseif platform.is_linux then
+        flags('-pthread')
     end
 
     build()
