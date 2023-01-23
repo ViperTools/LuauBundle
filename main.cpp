@@ -43,7 +43,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (!std::filesystem::exists(inputFile)) {
-        throw std::invalid_argument("Input file does not exist");
+        std::cerr << "Input file \"" << inputFile << "\" does not exist\n";
+        return 1;
     }
 
     LuauBundle::BundleOptions options;
