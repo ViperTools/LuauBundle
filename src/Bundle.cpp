@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-namespace LuaBundle {
+namespace LuauBundle {
     Bundle::Bundle(const std::filesystem::path& path, const BundleOptions& options, const Bundle* parent)
         : path(path),
         source(Util::ReadFile(path.string())),
@@ -47,10 +47,10 @@ namespace LuaBundle {
     }
 
     void Bundle::Require(Luau::AstExprGlobal* global, Luau::AstExprConstantString* argument, const std::filesystem::path& path) {
-        // Replace require with LuaBundle.LoadModule
+        // Replace require with LuauBundle.LoadModule
         size_t line = global->location.begin.line;
-        Util::ReplaceOnLine(source, line, global->location.begin.column + lineOffsets[line], 7, "LuaBundle.LoadModule");
-        lineOffsets[line] += 13;
+        Util::ReplaceOnLine(source, line, global->location.begin.column + lineOffsets[line], 7, "LuauBundle.LoadModule");
+        lineOffsets[line] += 14;
 
         // Replace argument with proper name
         std::string name = path.string();
@@ -70,7 +70,7 @@ namespace LuaBundle {
             }
 
             std::string bundleSource = Bundle(path, { .line = line + 1 }, this).source;
-            std::string registerSource = "LuaBundle.RegisterModule(\"" + path + "\", function()\n" + (options.Tab ? Util::Tab(bundleSource) : bundleSource) + "\nend)\n\n";
+            std::string registerSource = "LuauBundle.RegisterModule(\"" + path + "\", function()\n" + (options.Tab ? Util::Tab(bundleSource) : bundleSource) + "\nend)\n\n";
 
             size_t lineCount = Util::CountLines(registerSource);
 

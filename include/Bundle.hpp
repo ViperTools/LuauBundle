@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-namespace LuaBundle {
+namespace LuauBundle {
     struct BundleOptions {
         bool Tab = true;
         size_t line = moduleSourceLineCount + 1;

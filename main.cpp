@@ -1,16 +1,16 @@
-#include <LuaBundle.hpp>
+#include <LuauBundle.hpp>
 #include <FileWatch/FileWatch.hpp>
 #include <iostream>
 #include <unistd.h>
 
 std::string inputFile = "main.lua", outputFile = "bundle.lua";
 
-void Bundle(const std::filesystem::path& path, const LuaBundle::BundleOptions& options) {
+void Bundle(const std::filesystem::path& path, const LuauBundle::BundleOptions& options) {
     std::ofstream file(outputFile, std::ios::trunc);
 
-    LuaBundle::Bundle bundle(path, options);
-    std::string source = LuaBundle::moduleSource + bundle.source;
-    LuaBundle::Util::Replace(source, "lineMap = {}", "lineMap = " + bundle.BuildLineMap());
+    LuauBundle::Bundle bundle(path, options);
+    std::string source = LuauBundle::moduleSource + bundle.source;
+    LuauBundle::Util::Replace(source, "lineMap = {}", "lineMap = " + bundle.BuildLineMap());
 
     file << source;
 
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         throw std::invalid_argument("Input file does not exist");
     }
 
-    LuaBundle::BundleOptions options;
+    LuauBundle::BundleOptions options;
     options.Tab = !performance;
 
     std::filesystem::path path = std::filesystem::current_path().append(inputFile);
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
             }
         );
 
-        std::cout << "[LuaBundle] Watching for file changes" << std::endl;
+        std::cout << "[LuauBundle] Watching for file changes" << std::endl;
 
         std::cin.get();
     }

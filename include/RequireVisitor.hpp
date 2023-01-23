@@ -4,12 +4,12 @@
 #include <iostream>
 #include <filesystem>
 
-namespace LuaBundle {
+namespace LuauBundle {
     struct RequireVisitor : Luau::AstVisitor
     {
-        LuaBundle::Bundle* bundle;
+        LuauBundle::Bundle* bundle;
 
-        RequireVisitor(LuaBundle::Bundle* bundle)
+        RequireVisitor(LuauBundle::Bundle* bundle)
             : bundle(bundle)
         {}
 

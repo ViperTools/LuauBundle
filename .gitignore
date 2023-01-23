@@ -1,5 +1,5 @@
 /.vscode
 /test
-/lua-bundle
-/lua-bundle.exe
+/luau-bundle
+/luau-bundle.exe
 /dependencies/*/out
