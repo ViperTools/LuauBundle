@@ -1212,9 +1212,13 @@ namespace filewatch {
 
             void monitor_directory() {
                   _run_loop = CFRunLoopGetCurrent();
+                  // CUSTOM FIX Disable deprecated warning
+                  #pragma clang diagnostic push
+                  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                   FSEventStreamScheduleWithRunLoop(_directory, 
                         _run_loop, 
                         kCFRunLoopDefaultMode);
+                  #pragma clang diagnostic pop
                   FSEventStreamStart(_directory);
                   _running.set_value();
                   CFRunLoopRun();

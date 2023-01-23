@@ -15,6 +15,10 @@ function vmake.build()
     include('dependencies/luau/Ast/include')
     input('dependencies/luau/out/*.o')
 
+    if platform.is_osx then
+        flags('-framework CoreFoundation -framework CoreServices')
+    end
+
     build()
 end
 

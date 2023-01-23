@@ -1,4 +1,4 @@
-#include <luau/Parser.h>
+#include <Luau/Parser.h>
 #include <RequireVisitor.hpp>
 #include <Bundle.hpp>
 #include <fstream>

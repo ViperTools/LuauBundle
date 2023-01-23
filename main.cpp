@@ -42,6 +42,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    if (!std::filesystem::exists(inputFile)) {
+        throw std::invalid_argument("Input file does not exist");
+    }
+
     LuaBundle::BundleOptions options;
     options.Tab = !performance;
 

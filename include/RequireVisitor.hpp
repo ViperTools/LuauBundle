@@ -1,5 +1,5 @@
 #pragma once
-#include <luau/Ast.h>
+#include <Luau/Ast.h>
 #include <Bundle.hpp>
 #include <iostream>
 #include <filesystem>
