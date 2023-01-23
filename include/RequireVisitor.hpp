@@ -32,10 +32,10 @@ namespace LuaBundle {
                     return true;
                 }
 
-                std::filesystem::path path = std::filesystem::relative(bundle->path.parent_path().append(str));
+                std::filesystem::path path = bundle->path.parent_path().append(str);
 
                 if (std::filesystem::exists(path)) {
-                    bundle->Require(global, argument, path);
+                    bundle->Require(global, argument, std::filesystem::relative(path));
                 }
             }
 
