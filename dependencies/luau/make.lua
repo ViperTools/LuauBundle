@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-global
 using('g++')
 
-function vmake.build()
+function smake.build()
     standard('gnu++17')
     include {
         '../Ast/include',

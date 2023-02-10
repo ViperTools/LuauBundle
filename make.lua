@@ -3,7 +3,7 @@ using('g++')
 
 local dependencies = { 'luau' }
 
-function vmake.build()
+function smake.build()
     -- Main
     standard('c++2a')
     include { 'include', 'dependencies' }
@@ -24,18 +24,18 @@ function vmake.build()
     build()
 end
 
-function vmake.run()
+function smake.run()
     run(platform.is_windows and './luau-bundle.exe' or './luau-bundle')
 end
 
-function vmake.install()
+function smake.install()
     for _, name in next, dependencies do
         local outDir = ('dependencies/%s/out'):format(name)
 
         run(
             'rm -rf ' .. outDir,
             'mkdir ' .. outDir,
-            ('cd %s && vmake -f../make.lua'):format(outDir)
+            ('cd %s && smake -f../make.lua'):format(outDir)
         )
     end
 end
