@@ -2,7 +2,7 @@
 LuauBundle is a Luau bundler that uses the require function to allow you to include other lua files and output one bundle file. By default it is configured for Roblox, but modifying LuaModule.hpp to remove some of the custom error handling will allow it to work with normal Luau.
 
 ## Building
-LuauBundle uses [smake](https://github.com/Syntad/smake) for building. Run `smake -i` to build dependencies, then run `smake -b` to build, or simply run `smake -bi`. You only need to build dependencies once. Add the executable to your path if you want to use it anywhere.
+LuauBundle uses [smake](https://github.com/Syntad/smake) for building. Run `smake install` to build dependencies, then run `smake` to build. You only need to build dependencies once. Add the executable to your path if you want to use it anywhere.
 
 ## Platform Support
 I have tested successfully on Windows, MacOS, and Ubuntu. LuauBundle should support all platforms, but it is mainly limited by the file watcher. If for some reason the file watcher does not work, you can easily remove it by not including it in the make file and removing it's functionality from `main.cpp`.
