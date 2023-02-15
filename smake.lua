@@ -1,7 +1,4 @@
----@diagnostic disable: undefined-global
-using('g++')
-
-local dependencies = { 'luau' }
+import('smake/gpp', true)
 
 function smake.build()
     -- Main
@@ -29,13 +26,18 @@ function smake.run()
 end
 
 function smake.install()
-    for _, name in next, dependencies do
-        local outDir = ('dependencies/%s/out'):format(name)
+    standard('gnu++17')
+    include {
+        '../Ast/include',
+        '../Common/include'
+    }
+    input('../Ast/src/*.cpp')
+    flags('-c')
 
-        run(
-            'rm -rf ' .. outDir,
-            'mkdir ' .. outDir,
-            ('cd %s && smake -f../make.lua'):format(outDir)
-        )
-    end
+    local outDir = ('dependencies/luau/out'):format(name)
+    run(
+        'rm -rf ' .. outDir,
+        'mkdir ' .. outDir
+    )
+    runIn(outDir, makeCommand())
 end
